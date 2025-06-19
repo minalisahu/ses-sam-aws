@@ -1,23 +1,32 @@
+# Template format version for AWS CloudFormation
 AWSTemplateFormatVersion: '2010-09-09'
+
+# Use AWS SAM (Serverless Application Model) to simplify deployment
 Transform: AWS::Serverless-2016-10-31
 
+# Global properties applied to all Lambda functions in this template
 Globals:
   Function:
-    Timeout: 10
-    Runtime: python3.12
+    Timeout: 10          # Function timeout in seconds
+    Runtime: python3.12  # Runtime environment for all functions (Python 3.12)
 
 Resources:
+  # Define the Lambda function resource
   SendEmailFunction:
-    Type: AWS::Serverless::Function
+    Type: AWS::Serverless::Function  # Indicates it's a serverless function (Lambda)
     Properties:
-      FunctionName: send-ses-email-demo 
-      Handler: app.lambda_handler
-      CodeUri: hello_world/
-      MemorySize: 128
+      FunctionName: send-ses-email-demo  # The actual name that will appear in AWS Lambda
+      Handler: app.lambda_handler        # Entry point: app.py file, lambda_handler function
+      CodeUri: hello_world/              # Path to the folder containing the function code
+      MemorySize: 128                    # Memory allocated to the Lambda (in MB)
+
+      # Define environment variables available inside the Lambda function
       Environment:
         Variables:
-          SENDER_EMAIL: "your_verified_sender@example.com"
-          RECIPIENT_EMAIL: "your_verified_recipient@example.com"
+          SENDER_EMAIL: "your_verified_sender@example.com"      # Must be verified in SES
+          RECIPIENT_EMAIL: "your_verified_recipient@example.com"  # Also must be verified
+
+      # IAM policy granting permissions to send email via SES
       Policies:
-        - SESCrudPolicy:
-            IdentityName: "*"
+        - SESCrudPolicy:         # A built-in SAM policy template
+            IdentityName: "*"    # Applies to all SES identities in this account
